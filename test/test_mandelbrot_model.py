@@ -12,14 +12,14 @@ class TestMandelbrotModel(unittest.TestCase):
         self.sut = None
 
     def test_calculate_mandelbrot(self):
-        input = numpy.linspace(-1, 1, 11)
-        test_output = self.sut._calculate_mandelbrot_without_multiprocessing(input)
+        test_input = numpy.linspace(-1, 1, 11)
+        test_output = self.sut._calculate_mandelbrot_without_multiprocessing(test_input)
         expected_output = numpy.array([256, 256, 256, 256, 256, 256, 256, 6, 3, 2, 1])
         self.assertTrue((test_output == expected_output).all())
 
     def test_calculate_mandelbrot_multiprocessing(self):
-        input = numpy.linspace(-1, 1, 11)
-        test_output = self.sut._calculate_mandelbrot_multiprocessing(input)
+        test_input = numpy.linspace(-1, 1, 11)
+        test_output = self.sut._calculate_mandelbrot_multiprocessing(test_input)
         expected_output = numpy.array([256, 256, 256, 256, 256, 256, 256, 6, 3, 2, 1])
         self.assertTrue((test_output == expected_output).all())
 
