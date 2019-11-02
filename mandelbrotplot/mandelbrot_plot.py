@@ -1,6 +1,6 @@
 from chaco import default_colormaps
 from chaco.api import Plot, ArrayPlotData, HPlotContainer
-from traits.api import HasTraits, Int, Instance, Enum
+from traits.api import HasTraits, Int, Instance, Enum, Button
 from traitsui.api import View, VGroup, HGroup, Item, OKCancelButtons
 from enable.api import ComponentEditor
 
@@ -43,10 +43,16 @@ class MandelbrotPlot(HasTraits):
     min_y = Int(-1.25)
     max_y = Int(1.25)
     colormap = Enum(colormaps)
+    reset_button = Button(label="reset")
+    _initial_region = (-2.25, 0.75, -1.25, 1.25)
 
     traits_view = View(
         VGroup(
-            HGroup(Item("mandelbrot_model", show_label=False), Item("colormap"),),
+            HGroup(
+                Item("mandelbrot_model", show_label=False),
+                Item("colormap"),
+                Item("reset_button", show_label=False),
+            ),
             Item("container", editor=ComponentEditor(), show_label=False),
             orientation="vertical",
         ),
@@ -57,14 +63,7 @@ class MandelbrotPlot(HasTraits):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.mandelbrot_model = MandelbrotModel()
-        self._initial_z_array = self.mandelbrot_model.create_initial_array(
-            -2.25, 0.75, -1.25, 1.25
-        )
-
-        mandelbrot_C = self.mandelbrot_model.calculate_mandelbrot(
-            self._initial_z_array[:-1, :-1]
-        )
-        self.update_plot_data(mandelbrot_C)
+        self._update_with_initial_plot_data()
 
         self.image_plot = self.create_image_plot()
         self.container = HPlotContainer(
@@ -150,6 +149,20 @@ class MandelbrotPlot(HasTraits):
             value_range = self.image_plot.color_mapper.range
             self.image_plot.color_mapper = self._cmap(value_range)
             self.container.request_redraw()
+
+    def _reset_button_fired(self):
+        self._update_with_initial_plot_data()
+        self.fix_aspect_ratio()
+
+    def _update_with_initial_plot_data(self):
+        """Creates the initial mesh-grid and mandelbrot values on the grid."""
+        self._initial_z_array = self.mandelbrot_model.create_initial_array(
+            *self._initial_region
+        )
+        mandelbrot_C = self.mandelbrot_model.calculate_mandelbrot(
+            self._initial_z_array[:-1, :-1]
+        )
+        self.update_plot_data(mandelbrot_C)
 
 
 if __name__ == "__main__":
