@@ -1,7 +1,7 @@
 from chaco import default_colormaps
 from chaco.api import Plot, ArrayPlotData, HPlotContainer
-from traits.api import HasTraits, Int, Instance, Button, Enum
-from traitsui.api import View, VGroup, HGroup, Item, InstanceEditor
+from traits.api import HasTraits, Int, Instance, Enum
+from traitsui.api import View, VGroup, HGroup, Item, OKCancelButtons
 from enable.api import ComponentEditor
 
 from mandelbrotplot.mandelbrot_model import MandelbrotModel
@@ -11,11 +11,32 @@ colormaps = list(default_colormaps.color_map_name_dict.keys())
 
 
 class MandelbrotPlot(HasTraits):
-    mandelbrot_model = Instance(MandelbrotModel)
+    mandelbrot_model_view = View(
+        VGroup(
+            HGroup(
+                Item("use_multiprocessing", label="multiprocessing?"),
+                Item("number_of_processors", label="processors"),
+                label="multiprocessing",
+                show_border=True,
+            ),
+            VGroup(
+                Item("max_iterations"),
+                Item("x_steps"),
+                Item("y_steps"),
+                label="calculation",
+                show_border=True,
+            ),
+        ),
+        buttons=OKCancelButtons,
+        kind="modal",
+        resizable=True,
+        title="Mandelbrot calculation settings",
+        icon=None,
+    )
+    mandelbrot_model = Instance(MandelbrotModel, view=mandelbrot_model_view)
     plot_data = ArrayPlotData()
     plot_object = Plot(plot_data)
     container = Instance(HPlotContainer)
-    fix_aspect_ratio_button = Button()
     mandelbrot = "mandelbrot"
     min_x = Int(-2.25)
     max_x = Int(0.75)
@@ -25,11 +46,7 @@ class MandelbrotPlot(HasTraits):
 
     traits_view = View(
         VGroup(
-            HGroup(
-                Item("mandelbrot_model", editor=InstanceEditor(), show_label=False),
-                Item("fix_aspect_ratio_button", show_label=False),
-                Item("colormap"),
-            ),
+            HGroup(Item("mandelbrot_model", show_label=False), Item("colormap"),),
             Item("container", editor=ComponentEditor(), show_label=False),
             orientation="vertical",
         ),
@@ -55,6 +72,7 @@ class MandelbrotPlot(HasTraits):
         )
         self.container.add(self.plot_object)
         self.fix_aspect_ratio()
+        self._colormap_changed()
         self._append_tools()
 
     def create_image_plot(self):
@@ -70,10 +88,6 @@ class MandelbrotPlot(HasTraits):
             self.mandelbrot_model.latest_ys[-1] - self.mandelbrot_model.latest_ys[0]
         )
         self.container.aspect_ratio = x_width / y_width
-
-    def _fix_aspect_ratio_button_fired(self):
-        print("click")
-        self.fix_aspect_ratio()
 
     def update_plot_data(self, mandelbrot_C):
         """

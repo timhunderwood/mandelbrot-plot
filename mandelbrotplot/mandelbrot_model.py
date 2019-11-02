@@ -6,14 +6,13 @@ numpy.seterr(over="ignore", invalid="ignore")
 
 
 class MandelbrotModel(HasTraits):
-    max_iterations = Int(2 ** 8)
-    number_of_processors = Int(1)
+    max_iterations = Int(2 ** 7)
+    number_of_processors = Int(4)
     x_steps = Int(2 ** 10)
     y_steps = Int(2 ** 10)
+    use_multiprocessing = Bool(True)
     _latest_xs = None
     _latest_ys = None
-
-    use_multiprocessing = Bool(True)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
