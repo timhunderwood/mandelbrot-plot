@@ -37,7 +37,6 @@ class MandelbrotPlot(HasTraits):
     plot_data = ArrayPlotData()
     plot_object = Plot(plot_data)
     container = Instance(HPlotContainer)
-    mandelbrot = "mandelbrot"
     min_x = Int(-2.25)
     max_x = Int(0.75)
     min_y = Int(-1.25)
@@ -57,7 +56,7 @@ class MandelbrotPlot(HasTraits):
             orientation="vertical",
         ),
         resizable=True,
-        title=mandelbrot,
+        title="mandelbrot",
     )
 
     def __init__(self, *args, **kwargs):
@@ -76,7 +75,7 @@ class MandelbrotPlot(HasTraits):
 
     def create_image_plot(self):
         return self.plot_object.img_plot(
-            self.mandelbrot, xbounds="x_bounds", ybounds="y_bounds"
+            "mandelbrot", xbounds="x_bounds", ybounds="y_bounds"
         )[0]
 
     def fix_aspect_ratio(self):
@@ -93,7 +92,7 @@ class MandelbrotPlot(HasTraits):
 
         :return:
         """
-        self.plot_data.set_data(self.mandelbrot, mandelbrot_C)
+        self.plot_data.set_data("mandelbrot", mandelbrot_C)
         self.plot_data.set_data("x_bounds", self.mandelbrot_model.latest_xs)
         self.plot_data.set_data("y_bounds", self.mandelbrot_model.latest_ys)
         if hasattr(self, "image_plot"):
