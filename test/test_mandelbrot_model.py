@@ -6,6 +6,8 @@ from mandelbrotplot.mandelbrot_model import MandelbrotModel
 
 
 class TestMandelbrotModel(unittest.TestCase):
+    """Test basic mathematical methods of the Mandelbrot Model class."""
+
     def setUp(self):
         self.sut = MandelbrotModel()
         self.sut.max_iterations = 2 ** 8  # (for reproducibility in tests)

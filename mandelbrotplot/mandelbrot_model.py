@@ -22,6 +22,12 @@ class MandelbrotModel(HasTraits):
     _latest_ys = None
 
     def calculate_mandelbrot(self, z: numpy.ndarray) -> numpy.ndarray:
+        """Calculates the mandelbrot set for a given input array of complex values.
+
+        Determines whether multiprocessing should be used based on use_multiprocessing attribute.
+        :param z:
+        :return:
+        """
         if self.use_multiprocessing:
             return self._calculate_mandelbrot_multiprocessing(z)
         else:
@@ -30,6 +36,7 @@ class MandelbrotModel(HasTraits):
     def create_initial_array(
         self, min_x: float, max_x: float, min_y: float, max_y: float
     ) -> numpy.ndarray:
+        """Create a meshgrid of complex numbers on the complex plane."""
         x, y = self._create_mesh_grid(min_x, max_x, min_y, max_y)
         return x + 1j * y
 
@@ -62,10 +69,12 @@ class MandelbrotModel(HasTraits):
 
     @property
     def latest_xs(self):
+        """Tracks the x (real) region/bounds calculated."""
         return self._latest_xs
 
     @property
     def latest_ys(self):
+        """Tracks the y (imaginary) region/bounds calculated."""
         return self._latest_ys
 
     def _calculate_mandelbrot_multiprocessing(self, z: numpy.ndarray) -> numpy.ndarray:
